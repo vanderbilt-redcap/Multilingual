@@ -746,7 +746,14 @@ var Multilingual = (function(){
 					var translation = null;
 					var translate_mode = 'html';
 					try {
-						translation = $(translations['questions'][id]['text']);
+						translation = $(translations['questions'][id]['text']).filter(function(i, element) {
+							// filter out whitespace only nodes
+							if (element.nodeType && element.nodeType == 3 && /^\s+$/.test(element.nodeValue)) {
+								return false;
+							}
+							return true;
+						});
+						
 						if (!translation[0]) {
 							throw "no valid HTML elements";
 						}
@@ -769,11 +776,11 @@ var Multilingual = (function(){
 					} else {
 						// replace text node content sequentially
 						var tnodes1 = getTextNodesIn($('#label-' + id)[0])
-						var tnodes2 = getTextNodesIn(translation[0]);
 						
-						tnodes2.forEach(function(el, i) {
-							if (el && el.textContent && tnodes1[i])
-								tnodes1[i].textContent = el.textContent;
+						translation.each(function(i, text) {
+							if (tnodes1[i]) {
+								tnodes1[i].textContent = text.outerText;
+							}
 						});
 					}
 				}
