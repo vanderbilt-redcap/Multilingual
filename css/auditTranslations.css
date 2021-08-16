@@ -1,0 +1,20 @@
+
+.alert-warning {
+	border: 1px solid yellow !important;
+}
+
+div.row div.dropdown {
+	margin-left: 24px;
+}
+
+div.audit_container {
+	margin-top: 16px;
+}
+
+.audit_table, .audit_table th, .audit_table td {
+	border: 1px solid black;
+}
+
+.audit_table td.choice {
+	padding-left: 16px;
+}

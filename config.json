@@ -57,6 +57,12 @@
 				"name": "Multilingual Data Dictionary Support",
 				"icon": "gear",
 				"url": "dataDictionaryHelper.php"
+			},
+			{
+				"name": "Audit Translations",
+				"icon": "gear",
+				"url": "auditTranslations.php",
+				"show-header-and-footer": true
 			}
 		]
 	},

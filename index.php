@@ -5,6 +5,7 @@
 	use ExternalModules\ExternalModules;
 
 	$data = @$_POST['data'];
+	
 	if(isset($data) && $data != ''){
 		$data = json_decode($data, true);
 		if ($data['action'] == 'SAVE_SURVEY_SETTINGS' && $data['payload']) {

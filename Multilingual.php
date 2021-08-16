@@ -941,5 +941,103 @@ class Multilingual extends AbstractExternalModule
 		return $translations;
 	}
 	
+	public function getAuditTable($form_name, $language) {
+		// build table rows (one per field)
+		$table_rows = "";
+		
+		$redcap_url = $this->getVersionedURL();
+		
+		$data_entry_html = file_get_contents($redcap_url . "DataEntry/index.php?pid=" . $this->getProjectId() . "&page=$form_name&id=1");
+		$data_entry_dom = \DOMDocument::loadHTML($data_entry_html);
+		$multidrop_node = $data_entry_dom->getElementById('multidrop-tr');
+		
+		global $Proj;
+		$this_form = $Proj->forms[$form_name];
+		
+		foreach($this_form['fields'] as $field_name => $display_name) {
+			// skip form_complete fields
+			if ($field_name == $form_name . "_complete") {
+				continue;
+			}
+			
+			$field_metadata = $Proj->metadata[$field_name];
+			$element_enum = $Proj->metadata[$field_name]['element_enum'];
+			
+			$translations = $this->getFieldTranslations($field_metadata);
+			$translated_field_label = $translations['lang'][$language];
+			
+			// get default choice value/labels
+			if (!empty($element_enum)) {
+				$default_choices = $this->denumerateChoices($element_enum, $print);
+			}
+			
+			$table_rows .= "<tr>
+				<td class='field'>[$field_name]</td>
+				<td>$display_name</td>
+				<td>$translated_field_label</td>
+				<td>$translated_field_label</td>
+			</tr>";
+			
+			// foreach ($translations['answers'][$language] as $key => $value) {
+			foreach ($default_choices as $key => $value) {
+				$survey_translation = $translations['answers'][$language][$key];
+				$table_rows .= "<tr>
+					<td class='choice'>[$key]</td>
+					<td>$value</td>
+					<td>$survey_translation</td>
+					<td>$survey_translation</td>
+				</tr>";
+			}
+			unset($default_choices);
+		}
+		
+		$table_html = "<div class='audit_container'>
+			<h3>Audit Translations</h3>
+			<table class='audit_table'>
+				<thead>
+					<tr>
+						<th>Field/Choice Name</th>
+						<th>Field/Choice Label</th>
+						<th>Data Entry Translation</th>
+						<th>Survey Translation</th>
+					</tr>
+				</thead>
+				<tbody>
+					$table_rows
+				</tbody>
+			</table>
+		</div>";
+		return $table_html;
+	}
+	
+	private function denumerateChoices($element_enum) {
+		// this function returns an array of choices [ [value] => [label], ... ] from the given [element_enum] string (usually from Project metadata)
+		$choices = [];
+		
+		$exploded = explode(" \\n ", $element_enum);
+		foreach ($exploded as $choice_combined) {
+			if (strpos($choice_combined, ", ")) {
+				list($key, $value) = explode(", ", $choice_combined);
+				$choices[$key] = $value;
+			} else if (strpos($choice_combined, " | ")) {
+				list($label_none, $label_half, $label_full) = explode(" | ", $choice_combined);
+				$choices = [
+					'0' => $label_none,
+					'50' => $label_half,
+					'100' => $label_full
+				];
+			} else {
+				throw new \Exception("Failed to determine key and value for choice '$choice_combined'");
+			}
+		}
+		
+		return $choices;
+	}
+	
+	private function getVersionedURL() {
+		$version = str_replace("/redcap", "", APP_PATH_WEBROOT);
+		return APP_PATH_WEBROOT_FULL . "redcap" . $version;
+	}
+	
 }
 ?>
