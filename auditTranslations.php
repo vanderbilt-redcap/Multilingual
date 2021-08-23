@@ -19,7 +19,7 @@ if ($_GET['lang'] && $_GET['form']) {
 }
 
 ?>
-<div class='row'>
+<div class='row audit-options'>
 	<div class='dropdown form_dd'>
 		<button class='btn btn-primary dropdown-toggle' type='button' id='instrument_select' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
 			Select a form
@@ -44,6 +44,10 @@ if ($_GET['lang'] && $_GET['form']) {
 			?>
 		</div>
 	</div>
+	<div>
+		<input type="checkbox" id="escape-html">
+		<label class="audit-option" for="escape-html">Escape HTML</label>
+	</div>
 </div>
 
 <?php
@@ -54,3 +58,6 @@ if ($audit_table) {
 
 <script type='text/javascript' src='<?php echo $module->getUrl('js/auditTranslations.js'); ?>'></script>
 <link rel='stylesheet' type='text/css' href='<?php echo $module->getUrl('css/auditTranslations.css'); ?>'>
+<!-- add DataTables plugin -->
+<script type="text/javascript" src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">

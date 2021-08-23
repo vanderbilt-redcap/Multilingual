@@ -946,6 +946,7 @@ class Multilingual extends AbstractExternalModule
 		$table_rows = "";
 		
 		$redcap_url = $this->getVersionedURL();
+		$escape_html = isset($_GET['escapeHTML']);
 		
 		$data_entry_html = file_get_contents($redcap_url . "DataEntry/index.php?pid=" . $this->getProjectId() . "&page=$form_name&id=1");
 		$data_entry_dom = \DOMDocument::loadHTML($data_entry_html);
@@ -966,6 +967,10 @@ class Multilingual extends AbstractExternalModule
 			$translations = $this->getFieldTranslations($field_metadata);
 			$translated_field_label = $translations['lang'][$language];
 			
+			if ($escape_html) {
+				$translated_field_label = htmlspecialchars($translations['lang'][$language]);
+			}
+			
 			// get default choice value/labels
 			if (!empty($element_enum)) {
 				$default_choices = $this->denumerateChoices($element_enum, $print);
@@ -981,6 +986,9 @@ class Multilingual extends AbstractExternalModule
 			// foreach ($translations['answers'][$language] as $key => $value) {
 			foreach ($default_choices as $key => $value) {
 				$survey_translation = $translations['answers'][$language][$key];
+				if ($escape_html) {
+					$survey_translation = htmlspecialchars($translations['answers'][$language][$key]);
+				}
 				$table_rows .= "<tr>
 					<td class='choice'>[$key]</td>
 					<td>$value</td>

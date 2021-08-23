@@ -6,13 +6,25 @@
 div.row div.dropdown {
 	margin-left: 24px;
 }
+div.row div input {
+	margin-left: 24px;
+	margin-top: 8px;
+	width: 20px;
+	height: 20px;
+}
+label.audit-option {
+	font-size: 1.25rem;
+	margin-left: 4px;
+	position: relative;
+	top: -2px;
+}
 
 div.audit_container {
 	margin-top: 16px;
 }
 
 .audit_table, .audit_table th, .audit_table td {
-	border: 1px solid black;
+	/* border: 1px solid black; */
 }
 
 .audit_table td.choice {
