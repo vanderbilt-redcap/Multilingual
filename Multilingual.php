@@ -17,6 +17,12 @@ class Multilingual extends AbstractExternalModule
 		"slider"
 	];
 	
+	function __construct() {
+		parent::__construct();
+		
+		$this->dom_object = new \DOMDocument();
+	}
+	
 	function redcap_survey_page($project_id, $record, $instrument, $event_id, $group_id, $survey_hash, $response_id, $repeat_instance){
 		$api_endpoint = $this->getProjectSetting('use-api-endpoint', $project_id);
 		
@@ -965,35 +971,56 @@ class Multilingual extends AbstractExternalModule
 			$element_enum = $Proj->metadata[$field_name]['element_enum'];
 			
 			$translations = $this->getFieldTranslations($field_metadata);
-			$translated_field_label = $translations['lang'][$language];
+			$text_translation = $translations['lang'][$language];
 			
-			if ($escape_html) {
-				$translated_field_label = htmlspecialchars($translations['lang'][$language]);
-			}
 			
 			// get default choice value/labels
 			if (!empty($element_enum)) {
 				$default_choices = $this->denumerateChoices($element_enum, $print);
 			}
 			
+			// count nodes of original label, get nodal translation
+			$nodes = $this->getHTMLNodes($display_name);
+			$node_count = count($nodes);
+			$translation_nodes = $this->getHTMLNodes($text_translation);
+			$node_translation = $this->translatePerNode($display_name, $translation_nodes);
+			
+			if ($escape_html) {
+				$text_translation = htmlspecialchars($text_translation);
+				$node_translation = htmlspecialchars($node_translation);
+			}
+			
 			$table_rows .= "<tr>
 				<td class='field'>[$field_name]</td>
 				<td>$display_name</td>
-				<td>$translated_field_label</td>
-				<td>$translated_field_label</td>
+				<td>$node_count</td>
+				<td>$text_translation</td>
+				<td>$node_translation</td>
 			</tr>";
 			
 			// foreach ($translations['answers'][$language] as $key => $value) {
 			foreach ($default_choices as $key => $value) {
-				$survey_translation = $translations['answers'][$language][$key];
+				$text_translation = $translations['answers'][$language][$key];
+				$nodes = $this->getHTMLNodes($value);
+				$node_count = count($nodes);
+				$translation_nodes = $this->getHTMLNodes($text_translation);
+				$node_translation = $this->translatePerNode($value, $translation_nodes);
+				
+				// count nodes
+				$nodes = $this->getHTMLNodes($survey_translation);
+				$node_count = count($nodes);
+				
 				if ($escape_html) {
-					$survey_translation = htmlspecialchars($translations['answers'][$language][$key]);
+					$text_translation = htmlspecialchars($text_translation);
+					$node_translation = htmlspecialchars($node_translation);
 				}
+				
 				$table_rows .= "<tr>
 					<td class='choice'>[$key]</td>
 					<td>$value</td>
-					<td>$survey_translation</td>
-					<td>$survey_translation</td>
+					<td>$node_count</td>
+					<td>$text_translation</td>
+					<td>$node_translation</td>
 				</tr>";
 			}
 			unset($default_choices);
@@ -1006,8 +1033,9 @@ class Multilingual extends AbstractExternalModule
 					<tr>
 						<th>Field/Choice Name</th>
 						<th>Field/Choice Label</th>
-						<th>Data Entry Translation</th>
-						<th>Survey Translation</th>
+						<th>HTML Node Count</th>
+						<th>Text Translation</th>
+						<th>HTML (nodal) Translation</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1047,5 +1075,35 @@ class Multilingual extends AbstractExternalModule
 		return APP_PATH_WEBROOT_FULL . "redcap" . $version;
 	}
 	
+	public function getHTMLNodes($text) {
+		if (gettype($text) == "string") {
+			$dom = $this->dom_object;
+			$dom->loadHTML($text);
+			$nodes = [];
+			$bodyNodes = $dom->getElementsByTagName('body');  // returns DOMNodeList object
+			foreach($bodyNodes[0]->childNodes as $child) {    // assuming 1 <body> node
+				$nodes[] = $child->nodeValue;	// get actual text values, use nodeType to get tagName/#text/ other type
+			}
+			return $nodes;
+		}
+	}
+	
+	public function translatePerNode($text, $translated_nodes) {
+		if (empty($translated_nodes)) {
+			return null;
+		}
+		$dom = $this->dom_object;
+		$dom->loadHTML($text);
+		$bodyNodes = $dom->getElementsByTagName('body');
+		foreach($bodyNodes[0]->childNodes as $node_i => $child) {
+			if (isset($translated_nodes[$node_i])) {
+				$child->nodeValue = $translated_nodes[$node_i];
+			}
+		}
+		
+		preg_match('#<body>(.*)<\/body>#', $dom->saveHTML(), $match);
+		return $match[1];
+	}
+
 }
 ?>

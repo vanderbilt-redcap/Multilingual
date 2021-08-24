@@ -1,32 +1,34 @@
 <?php
 require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 
-$dom = new \DOMDocument();
+$nodes = $module->getHTMLNodes("<div>tl</div> <span>br</span>");
+$perNodeTranslation = $module->translatePerNode("<p>def</p> <span>abc</span>", $nodes);
 
-// libxml_use_internal_errors(true);
-// $dom->loadHTML("<span>abc</pan>");
-// print_r(libxml_get_errors());
-// echo "<br>";
-
-libxml_use_internal_errors(true);
-$dom->loadHTML("<div>adef<div>");
-print_r(libxml_get_errors());
-
-echo "-";
+echo "<pre>";
+print_r($perNodeTranslation);
+echo "\n";
+echo "\n";
+echo "\n";
+print_r(htmlspecialchars($perNodeTranslation));
+echo "</pre>";
 
 require_once APP_PATH_DOCROOT . 'ProjectGeneral/footer.php';
 
 /*
-	1. need escape html option (checkbox)
-	2. need 'HTML Nodes' column
-	3. need 'Text Translation' and 'Nodal Translation' columns
+x	1. need escape html option (checkbox)
+x	2. need 'HTML Node Count' column
+x	3. need 'Text Translation' and 'Nodal Translation' columns
 		instead of 'Data Entry' and 'Survey Translation'
+		
+	test nodal translations
+	test mobile multi choice survey presentation/translation
+	update README to explain audit translations page
 
 
 ** nice-to-haves
 	use JS string replace stuff for html escaping
 		https://stackoverflow.com/questions/1787322/what-is-the-htmlspecialchars-equivalent-in-javascript
-	remember selected page-length and default to 25?
+x	remember selected page-length and default to 25?
 	color empty translation cells gray?
 
 */
