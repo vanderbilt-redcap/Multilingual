@@ -50,3 +50,6 @@ If the "Translate PDFs on a per-instrument basis" checkbox is selected in the mo
 - <a href="https://cmhredcap.cmh.edu/plugins/media/7610-how-to-use-multilingual-external-module.docx">Click Here</a>
 
 ********************************************************************************
+
+###21CFR Validation
+Recent changes to the Multilingual module do not effect 21CFR validation.
