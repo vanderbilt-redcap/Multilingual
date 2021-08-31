@@ -25,7 +25,8 @@
 		{"1.12.0": "Add option to hide language translations at the form level. Added setting for 'Submit' button."},
 		{"1.12.1": "Fixed jQuery Exception in controlText and lang setting issue in getLanguage (multilingual_survey.js)"},
 		{"1.14.0": "Implemented PDF field translations."},
-		{"1.14.1": "Implemented PDF answer translations."}
+		{"1.14.1": "Implemented PDF answer translations."},
+		{"1.15.0": "Added the Audit Translations page."}
 	],
 	
 	"framework-version": 5,
