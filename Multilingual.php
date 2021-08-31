@@ -1096,13 +1096,41 @@ class Multilingual extends AbstractExternalModule
 		$dom->loadHTML($text);
 		$bodyNodes = $dom->getElementsByTagName('body');
 		foreach($bodyNodes[0]->childNodes as $node_i => $child) {
+			if ($node_i == 0) {
+				$first2 = substr($child, 0, 2);
+			}
 			if (isset($translated_nodes[$node_i])) {
 				$child->nodeValue = $translated_nodes[$node_i];
+			}
+			if ($node_i == count($bodyNodes)) {
+				$last4 = substr($child, strlen($child) - 4, 4);
 			}
 		}
 		
 		preg_match('#<body>(.*)<\/body>#', $dom->saveHTML(), $match);
-		return $match[1];
+		$translation = $match[1];
+		
+		// remove beginning and ending <p> tags if they are not present in the original translation nodes
+		$first2 = '';
+		$last4 = '';
+		if (isset($translated_nodes[0])) {
+			$first2 = substr($translated_nodes[0], 0, 2);
+		}
+		$lastNode = end($translated_nodes);
+		if (!empty($lastNode)) {
+			$last4 = substr($lastNode, max(0, strlen($lastNode) - 4), 4);
+		}
+		if (($first2 != "<p" || $last4 != "</p>")
+			&&
+			strpos($translation, "<p>") == 0
+			&&
+			strpos($translation, "</p>") == (strlen($translation) - 4)
+		) {
+			preg_match("/<p>(.*)<\/p>/", $translation, $match);
+			$translation = $match[1];
+		}
+		
+		return $translation;
 	}
 
 }
