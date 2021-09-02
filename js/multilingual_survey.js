@@ -779,7 +779,7 @@ var Multilingual = (function(){
 						
 						translation.each(function(i, text) {
 							if (tnodes1[i]) {
-								tnodes1[i].textContent = text.outerText;
+								tnodes1[i].textContent = text.innerText ?? text.outerText;
 							}
 						});
 					}
