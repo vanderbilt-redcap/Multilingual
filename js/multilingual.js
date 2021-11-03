@@ -246,7 +246,7 @@
 			var tmp;
 			var tmp2;
 			for(tmp in classes){
-				if(classes[tmp].indexOf('piperec') > -1){
+				if(classes[tmp].indexOf('piperec') > -1 && !classes[tmp].endsWith('-label')){
 					tmp2 = classes[tmp].split('-');
 					if($('[name="' + tmp2[2] + '"]').val() != ''){
 						$(this).html($('[name="' + tmp2[2] + '"]').val());
