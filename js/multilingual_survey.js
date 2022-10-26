@@ -764,6 +764,9 @@ var Multilingual = (function(){
 					
 					if (translate_mode == 'text') {
 						var nodes = $('#label-' + id).contents();
+						if(nodes.length == 1 && nodes[0].nodeType == 1 && nodes[0].nodeName == 'DIV') {
+							nodes = $('#label-' + id + ' [data-mlm-field="'+id+'"]').contents();
+						}
 						for (var i = 0; i < nodes.length; i++) {
 							// replace textContent of first text type node
 							if (!nodes[i] || !nodes[i].nodeType)
@@ -775,12 +778,18 @@ var Multilingual = (function(){
 						};
 					} else {
 						// replace text node content sequentially
-						var tnodes1 = getTextNodesIn($('#label-' + id)[0])
+						var tnodes1 = [];
+						var tnodes2 = [];
 						
-						translation.each(function(i, text) {
-							if (tnodes1[i]) {
-								tnodes1[i].textContent = text.innerText ?? text.outerText;
-							}
+						translation.each(function(inc, text) {
+							tnodes1 = getTextNodesIn($('#label-' + id + ' [data-mlm-field="'+id+'"]')[0].children[inc]);
+							tnodes2 = getTextNodesIn(translation[inc]);
+
+							tnodes2.forEach(function(el, i) {
+								if(tnodes2[i].length > 0 && typeof tnodes1[i] !== 'undefined') {
+									tnodes1[i].textContent = el.textContent;
+								}
+							});
 						});
 					}
 				}
