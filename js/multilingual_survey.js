@@ -786,7 +786,7 @@ var Multilingual = (function(){
 							tnodes2 = getTextNodesIn(translation[inc]);
 
 							tnodes2.forEach(function(el, i) {
-								if(typeof tnodes1[i] !== 'undefined') {
+								if(tnodes2[i].length > 0 && typeof tnodes1[i] !== 'undefined') {
 									tnodes1[i].textContent = el.textContent;
 								}
 							});
